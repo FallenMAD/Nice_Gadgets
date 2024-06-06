@@ -1,9 +1,14 @@
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import App from './App';
+import { persistor, store } from './app/store';
 
-import 'bulma/css/bulma.css';
-import '@fortawesome/fontawesome-free/css/all.css';
-import './index.scss';
-
-import { App } from './App';
-
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+ReactDOM.render(
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <App />
+    </PersistGate>
+  </Provider>,
+  document.getElementById('root'),
+);

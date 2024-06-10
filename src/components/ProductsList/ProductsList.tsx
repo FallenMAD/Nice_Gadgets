@@ -41,6 +41,8 @@ export const ProductsList: FC<Props> = ({ products }) => {
       { perPage: setValue || null, page: 1 },
       setSearchParams,
     );
+    // localStorage.removeItem('paginationPosition');
+    localStorage.setItem('paginationPosition', '1');
   };
 
   const handleSortChange = (value: string) => {

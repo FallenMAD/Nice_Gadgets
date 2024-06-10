@@ -87,6 +87,11 @@ export const Pagination: FC<Props> = ({
   };
 
   useEffect(() => {
+    setPosition(initialPosition);
+    localStorage.setItem('paginationPosition', '0');
+  }, [itemPerPage, initialPosition]);
+
+  useEffect(() => {
     localStorage.removeItem('paginationPosition');
   }, [location.pathname]);
 

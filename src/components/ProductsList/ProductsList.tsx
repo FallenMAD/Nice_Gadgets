@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { FC, useMemo } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { useSearchParams } from 'react-router-dom';
@@ -41,8 +42,6 @@ export const ProductsList: FC<Props> = ({ products }) => {
       { perPage: setValue || null, page: 1 },
       setSearchParams,
     );
-    // localStorage.removeItem('paginationPosition');
-    localStorage.setItem('paginationPosition', '1');
   };
 
   const handleSortChange = (value: string) => {
@@ -103,7 +102,7 @@ export const ProductsList: FC<Props> = ({ products }) => {
             ))}
           </ul>
 
-          {perPage === 71 ? (
+          {perPage === products.length ? (
             ''
           ) : (
             <div className="productList__pagiantion">

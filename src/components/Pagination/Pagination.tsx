@@ -1,9 +1,10 @@
 import cn from 'classnames';
-import { FC, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft } from '../../icons';
 
 import './Pagination.scss';
+import { usePagination } from '../../hooks';
 
 type Props = {
   currentPage: number;
@@ -12,57 +13,25 @@ type Props = {
   totalItems: number;
 };
 
-export function getTotalNumbers(from: number, to: number): number[] {
-  const numbers = [];
-
-  for (let n = from; n <= to; n += 1) {
-    numbers.push(n);
-  }
-
-  return numbers;
-}
-
 export const Pagination: FC<Props> = ({
   currentPage,
   totalItems,
   onPageChange,
   itemPerPage,
 }) => {
-  const totalPages = Math.ceil(totalItems / +itemPerPage);
-  const pageNumbers = getTotalNumbers(1, totalPages);
-  const location = useLocation();
-
-  const initialPosition = parseInt(
-    localStorage.getItem('paginationPosition') || '0',
-    10,
-  );
-  const [position, setPosition] = useState(initialPosition);
-
-  const itemWidth = 40;
-  const frameSize = 4;
-  const minPosition = 0;
-  const maxPosition = pageNumbers.length - frameSize;
-
-  const showNextButton = () => {
-    const newPosition = Math.min(position + 1, maxPosition);
-
-    setPosition(newPosition);
-    localStorage.setItem('paginationPosition', newPosition.toString());
-  };
-
-  const showPrevButton = () => {
-    const newPosition = Math.max(position - 1, minPosition);
-
-    setPosition(newPosition);
-    localStorage.setItem('paginationPosition', newPosition.toString());
-  };
+  const siblingItem = 2;
+  const paginationRange = usePagination({
+    totalCount: totalItems,
+    pageSize: itemPerPage,
+    siblingCount: siblingItem,
+    currentPage,
+  });
 
   const handleChangePrev = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     e.preventDefault();
     onPageChange(currentPage - 1);
-    showPrevButton();
   };
 
   const handleChangeNext = (
@@ -70,7 +39,6 @@ export const Pagination: FC<Props> = ({
   ) => {
     e.preventDefault();
     onPageChange(currentPage + 1);
-    showNextButton();
   };
 
   const handleChangePage = (
@@ -79,21 +47,9 @@ export const Pagination: FC<Props> = ({
   ) => {
     e.preventDefault();
     onPageChange(number);
-    if (number > currentPage) {
-      showNextButton();
-    } else {
-      showPrevButton();
-    }
   };
 
-  useEffect(() => {
-    setPosition(initialPosition);
-    localStorage.setItem('paginationPosition', '0');
-  }, [itemPerPage, initialPosition]);
-
-  useEffect(() => {
-    localStorage.removeItem('paginationPosition');
-  }, [location.pathname]);
+  const lastPage = paginationRange[paginationRange.length - 1];
 
   return (
     <>
@@ -101,7 +57,9 @@ export const Pagination: FC<Props> = ({
         <>
           <li className="pagination__item pagination__item--left">
             <Link
-              className={cn('pagination__link', { disabled: currentPage <= 1 })}
+              className={cn('pagination__link', {
+                disabled: currentPage === 1,
+              })}
               data-cy="paginationLeft"
               to={`${currentPage}`}
               onClick={e => handleChangePrev(e)}
@@ -110,14 +68,8 @@ export const Pagination: FC<Props> = ({
             </Link>
           </li>
           <ul className="pagination__list">
-            {pageNumbers.map(number => (
-              <li
-                key={number}
-                className="pagination__item"
-                style={{
-                  transform: `translateX(${-(position * itemWidth)}px)`,
-                }}
-              >
+            {paginationRange.map(number => (
+              <li key={number} className="pagination__list-item">
                 <Link
                   className={cn('pagination__link', {
                     pagination__active: currentPage === number,
@@ -133,13 +85,13 @@ export const Pagination: FC<Props> = ({
           <li className="pagination__item pagination__item--rigth">
             <Link
               className={cn('pagination__link', {
-                pagination__disabled: currentPage === totalPages,
+                pagination__disabled: currentPage === lastPage,
               })}
               data-cy="paginationRight"
               to={`${currentPage + 1}`}
               onClick={e => handleChangeNext(e)}
             >
-              {currentPage === totalPages ? (
+              {currentPage === lastPage ? (
                 <ArrowRight color="#b4bdc3" />
               ) : (
                 <ArrowRight />

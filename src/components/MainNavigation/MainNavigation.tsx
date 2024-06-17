@@ -48,12 +48,14 @@ export const MainNavigation: FC = () => {
 
   const newHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
+    localStorage.setItem('query', e.target.value);
     applyQuery(e);
   };
 
   const handleClearQuery = () => {
     setSearchWith(searchParams, { query: '' || null }, setSearchParams);
     setInputValue('');
+    localStorage.removeItem('query');
   };
 
   useEffect(() => {
@@ -67,6 +69,12 @@ export const MainNavigation: FC = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [windowWidth]);
+
+  useEffect(() => {
+    const newQuery = localStorage.getItem('query') || '';
+
+    setInputValue(newQuery);
+  }, []);
 
   return (
     <header className="main-header">

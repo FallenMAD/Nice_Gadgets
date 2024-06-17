@@ -9,3 +9,4 @@ export { getSearchWith, setSearchWith } from './searchHelper';
 export { sortPhones } from './sort';
 export { fnUpperFirstLetter } from './upperFirstLetter';
 export { debounce } from './debonce';
+export { range } from './range';
